@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+    consul:
+        image: consul
+        environment:
+            - CONSUL_BIND_INTERFACE=eth0
+        ports:
+            - 8500:8500
+    redis:
+        image: redis-search-consul:latest
+        environment:
+            - CONSUL_MASTER=consul
+        links:
+            - consul
+        depends_on:
+            - consul
+    client:
+        image: redissearch-cluster-client:latest
+        environment:
+            - CONSUL_MASTER=consul
+        links:
+            - consul
+        depends_on:
+            - consul
+            - redis
+        ports:
+            - 5555:5555
